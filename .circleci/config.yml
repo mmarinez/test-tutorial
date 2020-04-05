@@ -1,0 +1,45 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
+jobs:
+  build-and-test:
+    
+    docker:
+      - image: circleci/python:3.6.9-stretch-browsers
+
+    steps:
+      - checkout
+
+      - python/load-cache
+      - restore_cache:
+          keys:
+            - v3-dependencies-{{ checksum "requirements.txt" }}
+            - v3-dependencies
+
+
+      - python/install-deps
+      - run:
+          name: Install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/active
+            pip install -r requirements.txt
+
+      - python/save-cache
+      - save_cache:
+          paths:
+            - ./venv
+          key: v3-dependencies-{{ checksum "requirements.txt" }}
+
+      - run:
+          name: Run test suite
+          command: |
+            . venv/bin/active
+            pytest tests/ -v
+
+workflows:
+  main:
+    jobs:
+      - build-and-test

@@ -1,0 +1,11 @@
+selenium
+assertlib
+pytest==5.2.2
+pytest-xdist
+pytest-selenium
+pytest-variables
+virtualenv
+pytest-rerunfailures
+pyemojify
+prospector
+pyyaml
