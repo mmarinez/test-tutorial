@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  python: circleci/python@0.2.1
-
 jobs:
   build-and-test:
     
@@ -12,31 +9,33 @@ jobs:
     steps:
       - checkout
 
-      - python/load-cache
       - restore_cache:
           keys:
             - v3-dependencies-{{ checksum "requirements.txt" }}
             - v3-dependencies
 
-
-      - python/install-deps
       - run:
           name: Install dependencies
           command: |
             python3 -m venv venv
-            . venv/bin/active
+            . venv/bin/activate
             pip install -r requirements.txt
 
-      - python/save-cache
       - save_cache:
           paths:
             - ./venv
           key: v3-dependencies-{{ checksum "requirements.txt" }}
 
       - run:
+          name: Execute thepulper webpage
+          command: |
+            java -jar thepulper-1-2-5-jar-with-dependencies.jar
+          background: true
+
+      - run:
           name: Run test suite
           command: |
-            . venv/bin/active
+            source ./venv/bin/activate
             pytest tests/ -v
 
 workflows:
