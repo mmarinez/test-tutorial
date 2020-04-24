@@ -1,7 +1,9 @@
-version: 2.1
+version: 2
 
 jobs:
   build-and-test:
+
+    parallelism: 4
     
     docker:
       - image: circleci/python:3.6.9-stretch-browsers
@@ -35,10 +37,11 @@ jobs:
       - run:
           name: Run test suite
           command: |
-            source ./venv/bin/activate
-            pytest tests/ -v
+            . venv/bin/activate
+            pytest tests -v $(circleci tests glob tests/test_*.py | circleci tests split --split-by=timings --timings-type=classname)
 
 workflows:
   main:
     jobs:
       - build-and-test
+  version: 2
